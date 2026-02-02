@@ -1,0 +1,64 @@
+{
+  "placeholderImages": [
+    {
+      "id": "user-1",
+      "description": "User Avatar 1",
+      "imageUrl": "https://images.unsplash.com/photo-1710974481447-fb001ad9ad5a?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw3fHxwZXJzb24lMjBmYWNlfGVufDB8fHx8MTc2ODk2NTIyOHww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "person face"
+    },
+    {
+      "id": "user-2",
+      "description": "User Avatar 2",
+      "imageUrl": "https://images.unsplash.com/photo-1534528741775-53994a69daeb?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw5fHx3b21hbiUyMGZhY2V8ZW58MHx8fHwxNzY5MDMwMTQyfDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "woman face"
+    },
+    {
+      "id": "user-3",
+      "description": "User Avatar 3",
+      "imageUrl": "https://picsum.photos/seed/3/100/100",
+      "imageHint": "man face"
+    },
+    {
+      "id": "user-4",
+      "description": "User Avatar 4",
+      "imageUrl": "https://images.unsplash.com/photo-1600180758890-6b94519a8ba6?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw0fHxwZXJzb24lMjBwb3J0cmFpdHxlbnwwfHx8fDE3Njg5ODY5MDF8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "person portrait"
+    },
+    {
+      "id": "user-5",
+      "description": "User Avatar 5",
+      "imageUrl": "https://picsum.photos/seed/5/100/100",
+      "imageHint": "woman portrait"
+    },
+    {
+      "id": "user-6",
+      "description": "User Avatar 6",
+      "imageUrl": "https://images.unsplash.com/photo-1560250097-0b93528c311a?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwyfHxtYW4lMjBwb3J0cmFpdHxlbnwwfHx8fDE3NjkwMDgzMTF8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "man portrait"
+    },
+    {
+      "id": "user-7",
+      "description": "User Avatar 7",
+      "imageUrl": "https://images.unsplash.com/photo-1607990281513-2c110a25bd8c?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxwZXJzb24lMjBwcm9maWxlfGVufDB8fHx8MTc2OTAxODAyMXww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "person profile"
+    },
+    {
+      "id": "user-8",
+      "description": "User Avatar 8",
+      "imageUrl": "https://images.unsplash.com/photo-1611590027211-b954fd027b51?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw5fHx3b21hbiUyMHByb2ZpbGV8ZW58MHx8fHwxNzY4OTg1NzE0fDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "woman profile"
+    },
+    {
+      "id": "user-9",
+      "description": "User Avatar 9",
+      "imageUrl": "https://images.unsplash.com/photo-1522075469751-3a6694fb2f61?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwzfHxtYW4lMjBwcm9maWxlfGVufDB8fHx8MTc2ODk5NTc0NXww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "man profile"
+    },
+    {
+      "id": "user-10",
+      "description": "User Avatar 10",
+      "imageUrl": "https://picsum.photos/seed/10/100/100",
+      "imageHint": "face professional"
+    }
+  ]
+}

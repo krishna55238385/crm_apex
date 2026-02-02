@@ -1,0 +1,7 @@
+Testing AI Flow Generation...
+
+Prompt: "Send a welcome email when a new lead is created"
+Response: {"name":"New Lead Welcome Sequence","description":"Automatically sends a welcome email to the lead upon creation to initiate engagement.","trigger_type":"Lead Created","risk_level":"Low","actions":[{"summary":"Send initial welcome email to the new lead.","type":"SEND_EMAIL"}]}
+
+Prompt: "Notify me if a task is overdue"
+Response: {"name":"Task Overdue Alert","description":"Sends an immediate notification to the assigned user when a task's due date has passed.","trigger_type":"Task Overdue","risk_level":"Low","actions":[{"summary":"Send a system notification to the task owner/assignee.","type":"SEND_NOTIFICATION"}]}

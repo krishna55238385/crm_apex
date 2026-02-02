@@ -1,0 +1,22 @@
+CREATE TABLE leads (
+    id VARCHAR(255) PRIMARY KEY,
+    name VARCHAR(255) NOT NULL,
+    company VARCHAR(255) NOT NULL,
+    email VARCHAR(255) NOT NULL,
+    phone VARCHAR(50),
+    status ENUM('New', 'Contacted', 'Qualified', 'Lost') NOT NULL DEFAULT 'New',
+    owner_id VARCHAR(255),
+    deal_score INT DEFAULT 0,
+    enriched_data JSON,
+    temperature ENUM('Hot', 'Warm', 'Cold') DEFAULT 'Cold',
+    last_interaction_type ENUM('Email', 'Call', 'Meeting', 'None', 'AI Update'),
+    last_interaction_date DATETIME,
+    last_interaction_summary TEXT,
+    ai_score_reason TEXT,
+    follow_up_status ENUM('Pending', 'Overdue', 'None'),
+    hygiene_status ENUM('Clean', 'Duplicate Suspected', 'Incomplete Data'),
+    source VARCHAR(255),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (owner_id) REFERENCES users(id) ON DELETE SET NULL
+);

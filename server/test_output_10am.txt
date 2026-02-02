@@ -1,0 +1,4 @@
+Testing Complex AI Flow...
+
+Prompt: "Send me a daily report of employee calls at 7 PM"
+Response: {"name":"Daily Employee Call Activity Report","description":"Generates and sends a system notification summarizing all employee calls logged daily at 7 PM.","trigger_type":"Time Elapsed","risk_level":"Low","actions":[{"summary":"Send daily summary report of employee calls logged.","type":"SEND_NOTIFICATION"}],"schedule":"0 19 * * *"}

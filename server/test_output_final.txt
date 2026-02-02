@@ -1,0 +1,484 @@
+
+> server@1.0.0 test
+> jest
+
+PASS src/__tests__/authMiddleware.test.ts (22.149 s)
+PASS src/services/__tests__/leadService.test.ts (22.585 s)
+FAIL src/controllers/__tests__/dashboardController.test.ts (22.936 s)
+  ● Console
+
+    console.log
+      Dashboard: Computing Pipeline Value...
+
+      at log (src/controllers/dashboardController.ts:7:13)
+
+    console.log
+      Dashboard: Pipeline Value Computed
+
+      at log (src/controllers/dashboardController.ts:15:13)
+
+    console.log
+      Dashboard: Computing Deals Won...
+
+      at log (src/controllers/dashboardController.ts:18:13)
+
+    console.log
+      Dashboard: Computing New Leads...
+
+      at log (src/controllers/dashboardController.ts:24:13)
+
+    console.log
+      Dashboard: New Leads Computed
+
+      at log (src/controllers/dashboardController.ts:28:13)
+
+    console.log
+      Dashboard: Computing Close Ratio...
+
+      at log (src/controllers/dashboardController.ts:31:13)
+
+    console.log
+      Dashboard: Close Ratio Computed
+
+      at log (src/controllers/dashboardController.ts:36:13)
+
+    console.log
+      Dashboard: Fetching Recent Tasks...
+
+      at log (src/controllers/dashboardController.ts:39:13)
+
+    console.log
+      Dashboard: Recent Tasks Fetched
+
+      at log (src/controllers/dashboardController.ts:51:13)
+
+    console.log
+      Dashboard: Computing Pipeline Overview...
+
+      at log (src/controllers/dashboardController.ts:54:13)
+
+    console.log
+      Dashboard: Pipeline Overview Computed
+
+      at log (src/controllers/dashboardController.ts:60:13)
+
+    console.log
+      Dashboard: Computing Pipeline Value...
+
+      at log (src/controllers/dashboardController.ts:7:13)
+
+    console.log
+      Dashboard: Pipeline Value Computed
+
+      at log (src/controllers/dashboardController.ts:15:13)
+
+    console.log
+      Dashboard: Computing Deals Won...
+
+      at log (src/controllers/dashboardController.ts:18:13)
+
+    console.log
+      Dashboard: Computing New Leads...
+
+      at log (src/controllers/dashboardController.ts:24:13)
+
+    console.log
+      Dashboard: New Leads Computed
+
+      at log (src/controllers/dashboardController.ts:28:13)
+
+    console.log
+      Dashboard: Computing Close Ratio...
+
+      at log (src/controllers/dashboardController.ts:31:13)
+
+    console.log
+      Dashboard: Close Ratio Computed
+
+      at log (src/controllers/dashboardController.ts:36:13)
+
+    console.log
+      Dashboard: Fetching Recent Tasks...
+
+      at log (src/controllers/dashboardController.ts:39:13)
+
+    console.log
+      Dashboard: Recent Tasks Fetched
+
+      at log (src/controllers/dashboardController.ts:51:13)
+
+    console.log
+      Dashboard: Computing Pipeline Overview...
+
+      at log (src/controllers/dashboardController.ts:54:13)
+
+    console.log
+      Dashboard: Pipeline Overview Computed
+
+      at log (src/controllers/dashboardController.ts:60:13)
+
+  ● Dashboard Controller › should return correct dashboard stats
+
+    expect(jest.fn()).toHaveBeenCalledWith(...expected)
+
+    Expected: {"closeRatio": 50, "dealsWon": 5, "newLeads": 10, "pipelineByStage": ArrayContaining [ObjectContaining {"count": 3, "stage": "Negotiation", "value": 5000}], "pipelineValue": 10000, "recentTasks": ArrayContaining [ObjectContaining {"title": "Task 1"}]}
+
+    Number of calls: 0
+
+      48 |         await getDashboardStats(mockReq as Request, mockRes as Response, jest.fn());
+      49 |
+    > 50 |         expect(jsonMock).toHaveBeenCalledWith({
+         |                          ^
+      51 |             pipelineValue: 10000,
+      52 |             newLeads: 10,
+      53 |             dealsWon: 5,
+
+      at src/controllers/__tests__/dashboardController.test.ts:50:26
+      at fulfilled (src/controllers/__tests__/dashboardController.test.ts:5:58)
+
+  ● Dashboard Controller › should handle zero pipeline value gracefully
+
+    expect(jest.fn()).toHaveBeenCalledWith(...expected)
+
+    Expected: ObjectContaining {"pipelineValue": 0}
+
+    Number of calls: 0
+
+      75 |         await getDashboardStats(mockReq as Request, mockRes as Response, jest.fn());
+      76 |
+    > 77 |         expect(jsonMock).toHaveBeenCalledWith(expect.objectContaining({
+         |                          ^
+      78 |             pipelineValue: 0,
+      79 |         }));
+      80 |     });
+
+      at src/controllers/__tests__/dashboardController.test.ts:77:26
+      at fulfilled (src/controllers/__tests__/dashboardController.test.ts:5:58)
+
+FAIL src/controllers/leadsController.test.ts (23.463 s)
+  ● Console
+
+    console.log
+      2026-01-28T07:14:55.559Z [32minfo[39m: [WorkflowEngine] Triggered (Async): Lead Created for entity generated-id
+
+      at Console.log (node_modules/winston/lib/winston/transports/console.js:87:23)
+
+  ● Leads Controller › getLeads should return mapped leads
+
+    expect(jest.fn()).toHaveBeenCalledTimes(expected)
+
+    Expected number of calls: 1
+    Received number of calls: 0
+
+      47 |         await getLeads(req, res, () => { });
+      48 |
+    > 49 |         expect(prismaMock.leads.findMany).toHaveBeenCalledTimes(1);
+         |                                           ^
+      50 |         expect(res.json).toHaveBeenCalledWith(expect.arrayContaining([
+      51 |             expect.objectContaining({ name: 'John Doe', company: 'Acme' })
+      52 |         ]));
+
+      at src/controllers/leadsController.test.ts:49:43
+      at fulfilled (src/controllers/leadsController.test.ts:5:58)
+
+  ● Leads Controller › createLead should create a lead and return 201
+
+    expect(jest.fn()).toHaveBeenCalledWith(...expected)
+
+    Expected: 201
+
+    Number of calls: 0
+
+      83 |             })
+      84 |         }));
+    > 85 |         expect(res.status).toHaveBeenCalledWith(201);
+         |                            ^
+      86 |         expect(res.json).toHaveBeenCalledWith(createdLead);
+      87 |     });
+      88 | });
+
+      at src/controllers/leadsController.test.ts:85:28
+      at fulfilled (src/controllers/leadsController.test.ts:5:58)
+
+FAIL src/__tests__/workflowEngine.test.ts (23.786 s)
+  ● Console
+
+    console.log
+      2026-01-28T07:14:55.544Z [32minfo[39m: [WorkflowEngine] Triggered (Async): LEAD_CREATED for entity entity-123
+
+      at Console.log (node_modules/winston/lib/winston/transports/console.js:87:23)
+
+    console.log
+      2026-01-28T07:14:55.941Z [32minfo[39m: [WorkflowEngine] Event queued successfully.
+
+      at Console.log (node_modules/winston/lib/winston/transports/console.js:87:23)
+
+    console.log
+      2026-01-28T07:14:55.984Z [32minfo[39m: [WorkflowEngine] Triggered (Async): LEAD_CREATED for entity entity-123
+
+      at Console.log (node_modules/winston/lib/winston/transports/console.js:87:23)
+
+    console.log
+      2026-01-28T07:14:55.995Z [32minfo[39m: [Job] Processing Workflow Event: LEAD_CREATED for entity entity-123
+
+      at Console.log (node_modules/winston/lib/winston/transports/console.js:87:23)
+
+    console.log
+      2026-01-28T07:14:56.050Z [31merror[39m: Error: DB Error
+          at /Users/krishnaprasad/Documents/CRM/server/src/__tests__/workflowEngine.test.ts:46:61
+          at Generator.next (<anonymous>)
+          at /Users/krishnaprasad/Documents/CRM/server/src/__tests__/workflowEngine.test.ts:8:71
+          at new Promise (<anonymous>)
+          at __awaiter (/Users/krishnaprasad/Documents/CRM/server/src/__tests__/workflowEngine.test.ts:4:12)
+          at Object.<anonymous> (/Users/krishnaprasad/Documents/CRM/server/src/__tests__/workflowEngine.test.ts:45:73)
+          at Promise.finally.completed (/Users/krishnaprasad/Documents/CRM/server/node_modules/jest-circus/build/jestAdapterInit.js:1557:28)
+          at new Promise (<anonymous>)
+          at callAsyncCircusFn (/Users/krishnaprasad/Documents/CRM/server/node_modules/jest-circus/build/jestAdapterInit.js:1497:10)
+          at _callCircusTest (/Users/krishnaprasad/Documents/CRM/server/node_modules/jest-circus/build/jestAdapterInit.js:1007:40)
+          at processTicksAndRejections (node:internal/process/task_queues:103:5)
+          at _runTest (/Users/krishnaprasad/Documents/CRM/server/node_modules/jest-circus/build/jestAdapterInit.js:947:3)
+          at /Users/krishnaprasad/Documents/CRM/server/node_modules/jest-circus/build/jestAdapterInit.js:849:7
+          at _runTestsForDescribeBlock (/Users/krishnaprasad/Documents/CRM/server/node_modules/jest-circus/build/jestAdapterInit.js:862:11)
+          at _runTestsForDescribeBlock (/Users/krishnaprasad/Documents/CRM/server/node_modules/jest-circus/build/jestAdapterInit.js:857:11)
+          at _runTestsForDescribeBlock (/Users/krishnaprasad/Documents/CRM/server/node_modules/jest-circus/build/jestAdapterInit.js:857:11)
+          at run (/Users/krishnaprasad/Documents/CRM/server/node_modules/jest-circus/build/jestAdapterInit.js:761:3)
+          at runAndTransformResultsToJestFormat (/Users/krishnaprasad/Documents/CRM/server/node_modules/jest-circus/build/jestAdapterInit.js:1918:21)
+          at jestAdapter (/Users/krishnaprasad/Documents/CRM/server/node_modules/jest-circus/build/runner.js:101:19)
+          at runTestInternal (/Users/krishnaprasad/Documents/CRM/server/node_modules/jest-runner/build/testWorker.js:275:16)
+          at runTest (/Users/krishnaprasad/Documents/CRM/server/node_modules/jest-runner/build/testWorker.js:343:7)
+          at Object.worker (/Users/krishnaprasad/Documents/CRM/server/node_modules/jest-runner/build/testWorker.js:497:12)
+
+      at Console.log (node_modules/winston/lib/winston/transports/console.js:87:23)
+          at Generator.throw (<anonymous>)
+
+    console.log
+      2026-01-28T07:14:56.064Z [32minfo[39m: [WorkflowEngine] Event queued successfully.
+
+      at Console.log (node_modules/winston/lib/winston/transports/console.js:87:23)
+
+    console.log
+      2026-01-28T07:14:56.082Z [32minfo[39m: [WorkflowEngine] Executing Workflow "Task Workflow": {"type":"CREATE_TASK","title":"Call lead","dueDate":"2026-01-28T07:14:56.082Z"}
+
+      at Console.log (node_modules/winston/lib/winston/transports/console.js:87:23)
+
+    console.log
+      2026-01-28T07:14:56.086Z [32minfo[39m: [WorkflowEngine] Executing Workflow "Notify Workflow": {"type":"SEND_NOTIFICATION","userId":"user-789","message":"Unknown Action"}
+
+      at Console.log (node_modules/winston/lib/winston/transports/console.js:87:23)
+
+    console.log
+      2026-01-28T07:14:56.097Z [32minfo[39m: [WorkflowEngine] Executing Workflow "Broadcast Workflow": {"type":"SEND_NOTIFICATION","userId":"all","message":"Unknown Action"}
+
+      at Console.log (node_modules/winston/lib/winston/transports/console.js:87:23)
+
+    console.log
+      2026-01-28T07:14:56.102Z [32minfo[39m: [WorkflowEngine] Executing Workflow "JSON Workflow": {"type":"CREATE_TASK","title":"Unknown Action","dueDate":"2026-01-28T07:14:56.102Z"}
+
+      at Console.log (node_modules/winston/lib/winston/transports/console.js:87:23)
+
+    console.log
+      2026-01-28T07:14:56.108Z [32minfo[39m: [WorkflowEngine] Executing Workflow "Fail Workflow": {"type":"CREATE_TASK","title":"Unknown Action","dueDate":"2026-01-28T07:14:56.108Z"}
+
+      at Console.log (node_modules/winston/lib/winston/transports/console.js:87:23)
+
+    console.log
+      2026-01-28T07:14:56.111Z [31merror[39m: Error: Task Creation Failed
+          at /Users/krishnaprasad/Documents/CRM/server/src/__tests__/workflowEngine.test.ts:138:55
+          at Generator.next (<anonymous>)
+          at /Users/krishnaprasad/Documents/CRM/server/src/__tests__/workflowEngine.test.ts:8:71
+          at new Promise (<anonymous>)
+          at __awaiter (/Users/krishnaprasad/Documents/CRM/server/src/__tests__/workflowEngine.test.ts:4:12)
+          at Object.<anonymous> (/Users/krishnaprasad/Documents/CRM/server/src/__tests__/workflowEngine.test.ts:131:65)
+          at Promise.finally.completed (/Users/krishnaprasad/Documents/CRM/server/node_modules/jest-circus/build/jestAdapterInit.js:1557:28)
+          at new Promise (<anonymous>)
+          at callAsyncCircusFn (/Users/krishnaprasad/Documents/CRM/server/node_modules/jest-circus/build/jestAdapterInit.js:1497:10)
+          at _callCircusTest (/Users/krishnaprasad/Documents/CRM/server/node_modules/jest-circus/build/jestAdapterInit.js:1007:40)
+          at processTicksAndRejections (node:internal/process/task_queues:103:5)
+          at _runTest (/Users/krishnaprasad/Documents/CRM/server/node_modules/jest-circus/build/jestAdapterInit.js:947:3)
+          at /Users/krishnaprasad/Documents/CRM/server/node_modules/jest-circus/build/jestAdapterInit.js:849:7
+          at _runTestsForDescribeBlock (/Users/krishnaprasad/Documents/CRM/server/node_modules/jest-circus/build/jestAdapterInit.js:862:11)
+          at _runTestsForDescribeBlock (/Users/krishnaprasad/Documents/CRM/server/node_modules/jest-circus/build/jestAdapterInit.js:857:11)
+          at _runTestsForDescribeBlock (/Users/krishnaprasad/Documents/CRM/server/node_modules/jest-circus/build/jestAdapterInit.js:857:11)
+          at run (/Users/krishnaprasad/Documents/CRM/server/node_modules/jest-circus/build/jestAdapterInit.js:761:3)
+          at runAndTransformResultsToJestFormat (/Users/krishnaprasad/Documents/CRM/server/node_modules/jest-circus/build/jestAdapterInit.js:1918:21)
+          at jestAdapter (/Users/krishnaprasad/Documents/CRM/server/node_modules/jest-circus/build/runner.js:101:19)
+          at runTestInternal (/Users/krishnaprasad/Documents/CRM/server/node_modules/jest-runner/build/testWorker.js:275:16)
+          at runTest (/Users/krishnaprasad/Documents/CRM/server/node_modules/jest-runner/build/testWorker.js:343:7)
+          at Object.worker (/Users/krishnaprasad/Documents/CRM/server/node_modules/jest-runner/build/testWorker.js:497:12)
+
+      at Console.log (node_modules/winston/lib/winston/transports/console.js:87:23)
+          at Generator.throw (<anonymous>)
+
+  ● Workflow Engine › trigger › should fetch active workflows and execute them
+
+    expect(jest.fn()).toHaveBeenCalledWith(...expected)
+
+    Expected: {"where": {"is_active": true, "trigger_type": "LEAD_CREATED"}}
+
+    Number of calls: 0
+
+      36 |             await trigger('LEAD_CREATED', mockEntity);
+      37 |
+    > 38 |             expect(prismaMock.workflows.findMany).toHaveBeenCalledWith({
+         |                                                   ^
+      39 |                 where: { trigger_type: 'LEAD_CREATED', is_active: true }
+      40 |             });
+      41 |             // Check if log was created, implying execution happened
+
+      at src/__tests__/workflowEngine.test.ts:38:51
+      at fulfilled (src/__tests__/workflowEngine.test.ts:5:58)
+
+  ● Workflow Engine › trigger › should handle errors gracefully during trigger
+
+    expect(jest.fn()).toHaveBeenCalled()
+
+    Expected number of calls: >= 1
+    Received number of calls:    0
+
+      48 |             await trigger('LEAD_CREATED', mockEntity);
+      49 |
+    > 50 |             expect(console.error).toHaveBeenCalled();
+         |                                   ^
+      51 |         });
+      52 |     });
+      53 |
+
+      at src/__tests__/workflowEngine.test.ts:50:35
+      at fulfilled (src/__tests__/workflowEngine.test.ts:5:58)
+
+  ● Workflow Engine › executeWorkflow › should execute CREATE_TASK action
+
+    expect(jest.fn()).toHaveBeenCalledWith(...expected)
+
+    Expected: ObjectContaining {"data": ObjectContaining {"related_lead_id": "entity-123", "status": "Upcoming", "title": "Follow up"}}
+    Received: {"data": {"due_date": 2026-01-28T07:14:56.082Z, "id": "618f4f7b-bcf7-4b10-9651-96d13d1b3464", "priority": 5, "related_lead_id": "entity-123", "status": "Upcoming", "title": "Call lead"}}
+
+    Number of calls: 1
+
+      62 |             await executeWorkflow(mockWorkflow, mockEntity);
+      63 |
+    > 64 |             expect(prismaMock.tasks.create).toHaveBeenCalledWith(expect.objectContaining({
+         |                                             ^
+      65 |                 data: expect.objectContaining({
+      66 |                     title: 'Follow up',
+      67 |                     status: 'Upcoming',
+
+      at src/__tests__/workflowEngine.test.ts:64:45
+      at fulfilled (src/__tests__/workflowEngine.test.ts:5:58)
+
+  ● Workflow Engine › executeWorkflow › should execute SEND_NOTIFICATION (single user)
+
+    expect(jest.fn()).toHaveBeenCalledWith(...expected)
+
+    Expected: ObjectContaining {"data": ObjectContaining {"message": "Alert", "user_id": "user-789"}}
+    Received: {"data": {"id": "065c6f03-4bf6-4733-bc7d-be59e8179ac7", "message": "Unknown Action", "title": "New Notification", "type": "info", "user_id": "user-789"}}
+
+    Number of calls: 1
+
+      87 |             await executeWorkflow(mockWorkflow, mockEntity);
+      88 |
+    > 89 |             expect(prismaMock.notifications.create).toHaveBeenCalledWith(expect.objectContaining({
+         |                                                     ^
+      90 |                 data: expect.objectContaining({
+      91 |                     user_id: 'user-789',
+      92 |                     message: 'Alert'
+
+      at src/__tests__/workflowEngine.test.ts:89:53
+      at fulfilled (src/__tests__/workflowEngine.test.ts:5:58)
+
+  ● Workflow Engine › executeWorkflow › should handle JSON string actions parsing
+
+    expect(jest.fn()).toHaveBeenCalledWith(...expected)
+
+    Expected: ObjectContaining {"data": ObjectContaining {"title": "Parsed Task"}}
+    Received: {"data": {"due_date": 2026-01-28T07:14:56.102Z, "id": "61cd9237-1747-4c2a-ab8e-98d96abfc491", "priority": 5, "related_lead_id": "entity-123", "status": "Upcoming", "title": "Unknown Action"}}
+
+    Number of calls: 1
+
+      124 |             await executeWorkflow(mockWorkflow, mockEntity);
+      125 |
+    > 126 |             expect(prismaMock.tasks.create).toHaveBeenCalledWith(expect.objectContaining({
+          |                                             ^
+      127 |                 data: expect.objectContaining({ title: 'Parsed Task' })
+      128 |             }));
+      129 |         });
+
+      at src/__tests__/workflowEngine.test.ts:126:45
+      at fulfilled (src/__tests__/workflowEngine.test.ts:5:58)
+
+A worker process has failed to exit gracefully and has been force exited. This is likely caused by tests leaking due to improper teardown. Try running with --detectOpenHandles to find leaks. Active timers can also cause this, ensure that .unref() was called on them.
+----------------------------|---------|----------|---------|---------|---------------------------------
+File                        | % Stmts | % Branch | % Funcs | % Lines | Uncovered Line #s               
+----------------------------|---------|----------|---------|---------|---------------------------------
+All files                   |   15.08 |    17.94 |   12.32 |   15.24 |                                 
+ src                        |       0 |        0 |       0 |       0 |                                 
+  index.ts                  |       0 |        0 |       0 |       0 | 1-78                            
+ src/controllers            |    8.43 |     2.95 |     6.4 |    9.06 |                                 
+  activityLogController.ts  |       0 |        0 |       0 |       0 | 2-53                            
+  aiController.ts           |       0 |        0 |       0 |       0 | 2-17                            
+  analyticsController.ts    |       0 |      100 |       0 |       0 | 2-8                             
+  assignmentController.ts   |       0 |        0 |       0 |       0 | 2-51                            
+  attendanceController.ts   |       0 |        0 |       0 |       0 | 2-108                           
+  dashboardController.ts    |     100 |    83.33 |     100 |     100 | 65                              
+  dealsController.ts        |       0 |      100 |       0 |       0 | 2-22                            
+  followUpController.ts     |       0 |        0 |       0 |       0 | 2-79                            
+  inviteController.ts       |       0 |        0 |       0 |       0 | 2-49                            
+  leadSettingsController.ts |       0 |        0 |       0 |       0 | 2-109                           
+  leadsController.ts        |   48.14 |      100 |   33.33 |   52.38 | 7,16-17,21-22,26-27,31-33       
+  notificationController.ts |       0 |        0 |       0 |       0 | 3-56                            
+  roleController.ts         |       0 |        0 |       0 |       0 | 2-72                            
+  settingsController.ts     |       0 |        0 |       0 |       0 | 2-48                            
+  tasksController.ts        |       0 |      100 |       0 |       0 | 2-12                            
+  userController.ts         |       0 |        0 |       0 |       0 | 2-168                           
+  webhookController.ts      |       0 |        0 |       0 |       0 | 2-49                            
+  workflowController.ts     |       0 |        0 |       0 |       0 | 2-101                           
+ src/middlewares            |   55.31 |    55.55 |   53.33 |   55.42 |                                 
+  authMiddleware.ts         |    93.1 |       80 |     100 |    92.3 | 59-60                           
+  correlation.ts            |       0 |        0 |       0 |       0 | 2-25                            
+  errorHandler.ts           |   61.53 |        0 |      50 |   58.33 | 18-35                           
+  rateLimiter.ts            |       0 |      100 |     100 |       0 | 1-3                             
+  rbacMiddleware.ts         |      85 |       75 |     100 |   83.33 | 9,25,32                         
+  requestLogger.ts          |       0 |        0 |       0 |       0 | 2-19                            
+  validate.ts               |       0 |        0 |       0 |       0 | 2-24                            
+ src/routes                 |       0 |      100 |     100 |       0 |                                 
+  activityLogs.ts           |       0 |      100 |     100 |       0 | 1-9                             
+  analytics.ts              |       0 |      100 |     100 |       0 | 1-14                            
+  dashboardRoutes.ts        |       0 |      100 |     100 |       0 | 1-12                            
+  deals.ts                  |       0 |      100 |     100 |       0 | 1-14                            
+  followUps.ts              |       0 |      100 |     100 |       0 | 1-10                            
+  index.ts                  |       0 |      100 |     100 |       0 | 1-43                            
+  leads.ts                  |       0 |      100 |     100 |       0 | 1-33                            
+  notifications.ts          |       0 |      100 |     100 |       0 | 1-10                            
+  roles.ts                  |       0 |      100 |     100 |       0 | 1-11                            
+  settings.ts               |       0 |      100 |     100 |       0 | 1-35                            
+  tasks.ts                  |       0 |      100 |     100 |       0 | 1-12                            
+  userRoutes.ts             |       0 |      100 |     100 |       0 | 1-20                            
+  users.ts                  |       0 |      100 |     100 |       0 | 1-22                            
+  webhookRoutes.ts          |       0 |      100 |     100 |       0 | 1-9                             
+  workflows.ts              |       0 |      100 |     100 |       0 | 1-17                            
+ src/schemas                |       0 |      100 |     100 |       0 |                                 
+  dealSchema.ts             |       0 |      100 |     100 |       0 | 1-13                            
+  leadSchema.ts             |       0 |      100 |     100 |       0 | 1-13                            
+  taskSchema.ts             |       0 |      100 |     100 |       0 | 1-14                            
+ src/scripts                |       0 |        0 |       0 |       0 |                                 
+  create-user.ts            |       0 |        0 |       0 |       0 | 1-53                            
+  seed.ts                   |       0 |        0 |       0 |       0 | 1-67                            
+ src/services               |   23.39 |    22.33 |   11.86 |   24.41 |                                 
+  aiService.ts              |       0 |        0 |       0 |       0 | 1-102                           
+  analyticsService.ts       |       0 |        0 |       0 |       0 | 1-167                           
+  dealService.ts            |       0 |        0 |       0 |       0 | 1-81                            
+  emailService.ts           |       0 |        0 |       0 |       0 | 1-34                            
+  leadService.ts            |   41.53 |    33.33 |   16.66 |   46.42 | 110-217                         
+  scheduler.ts              |       0 |      100 |       0 |       0 | 1-5                             
+  socketService.ts          |       0 |        0 |       0 |       0 | 1-89                            
+  taskService.ts            |       0 |        0 |       0 |       0 | 1-57                            
+  workflowEngine.ts         |   75.71 |    55.31 |    62.5 |    74.6 | 7-34,52,68,84,88-89,101,122,134 
+ src/utils                  |     100 |       75 |     100 |     100 |                                 
+  asyncHandler.ts           |     100 |      100 |     100 |     100 |                                 
+  logger.ts                 |     100 |       75 |     100 |     100 | 10-15                           
+----------------------------|---------|----------|---------|---------|---------------------------------
+Test Suites: 3 failed, 2 passed, 5 total
+Tests:       9 failed, 10 passed, 19 total
+Snapshots:   0 total
+Time:        59.575 s
+Ran all test suites.

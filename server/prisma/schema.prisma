@@ -1,0 +1,547 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model activity_logs {
+  id                 String               @id @db.VarChar(255)
+  timestamp          DateTime             @db.DateTime(0)
+  actor_id           String?              @db.VarChar(255)
+  actor_name         String?              @db.VarChar(255)
+  action             String?              @db.VarChar(50)
+  target_type        String?              @db.VarChar(50)
+  target_id          String               @db.VarChar(255)
+  target_name        String?              @db.VarChar(255)
+  summary            String?              @db.Text
+  details_before     String?              @db.Text
+  details_after      String?              @db.Text
+  details_reason     String?              @db.Text
+  details_confidence Decimal?             @db.Decimal(5, 4)
+  source             activity_logs_source
+  created_at         DateTime?            @default(now()) @db.Timestamp(0)
+  users              users?               @relation(fields: [actor_id], references: [id], onUpdate: NoAction, map: "activity_logs_ibfk_1")
+
+  @@index([actor_id], map: "actor_id")
+}
+
+model ai_anomaly_logs {
+  id          String                       @id @db.VarChar(255)
+  timestamp   DateTime                     @default(now()) @db.DateTime(0)
+  anomaly     String?                      @db.Text
+  description String?                      @db.Text
+  risk_level  ai_anomaly_logs_risk_level?
+  entity_type ai_anomaly_logs_entity_type?
+  entity_name String?                      @db.VarChar(255)
+}
+
+model assignment_rules {
+  id         String    @id @db.VarChar(36)
+  name       String    @db.VarChar(100)
+  conditions Json?
+  assign_to  String?   @db.VarChar(255)
+  priority   Int?      @default(0)
+  is_active  Boolean?  @default(true)
+  created_at DateTime? @default(now()) @db.Timestamp(0)
+}
+
+model attendance {
+  id             String            @id @db.VarChar(255)
+  user_id        String            @db.VarChar(255)
+  date           DateTime          @db.Date
+  status         attendance_status
+  check_in_time  DateTime?         @db.DateTime(0)
+  check_out_time DateTime?         @db.DateTime(0)
+  work_from_home Boolean?          @default(false)
+  notes          String?           @db.Text
+  created_at     DateTime?         @default(now()) @db.Timestamp(0)
+  updated_at     DateTime?         @default(now()) @db.Timestamp(0)
+  users          users             @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "attendance_ibfk_1")
+
+  @@index([user_id], map: "user_id")
+}
+
+model communications {
+  id         String                   @id @db.VarChar(255)
+  type       communications_type
+  contact_id String                   @db.VarChar(255)
+  summary    String?                  @db.Text
+  timestamp  DateTime                 @db.DateTime(0)
+  direction  communications_direction
+  content    String?                  @db.Text
+  created_at DateTime?                @default(now()) @db.Timestamp(0)
+  leads      leads                    @relation(fields: [contact_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "communications_ibfk_1")
+
+  @@index([contact_id], map: "contact_id")
+}
+
+model deals {
+  id          String       @id @db.VarChar(255)
+  name        String       @db.VarChar(255)
+  lead_id     String       @db.VarChar(255)
+  stage       deals_stage
+  value       Decimal?     @default(0.00) @db.Decimal(15, 2)
+  close_date  DateTime?    @db.DateTime(0)
+  owner_id    String?      @db.VarChar(255)
+  probability Decimal?     @db.Decimal(5, 2)
+  created_at  DateTime?    @default(now()) @db.Timestamp(0)
+  updated_at  DateTime?    @default(now()) @db.Timestamp(0)
+  leads       leads        @relation(fields: [lead_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "deals_ibfk_1")
+  users       users?       @relation(fields: [owner_id], references: [id], onUpdate: NoAction, map: "deals_ibfk_2")
+  follow_ups  follow_ups[]
+  tasks       tasks[]
+
+  @@index([lead_id], map: "lead_id")
+  @@index([owner_id], map: "owner_id")
+}
+
+model execution_logs {
+  id                    String                                @id @db.VarChar(255)
+  timestamp             DateTime                              @default(now()) @db.DateTime(0)
+  workflow_name         String?                               @db.VarChar(255)
+  triggered_entity_type execution_logs_triggered_entity_type?
+  triggered_entity_name String?                               @db.VarChar(255)
+  action_executed       String?                               @db.Text
+  status                execution_logs_status?
+  actor                 execution_logs_actor?
+  execution_time_ms     Int?
+}
+
+model follow_ups {
+  id                       String                  @id @db.VarChar(255)
+  title                    String                  @db.VarChar(255)
+  lead_id                  String                  @db.VarChar(255)
+  deal_id                  String?                 @db.VarChar(255)
+  due_date                 DateTime?               @db.DateTime(0)
+  priority_score           Int?
+  status                   follow_ups_status
+  is_ai_generated          Boolean?                @default(false)
+  last_interaction_summary String?                 @db.Text
+  ai_suggested_message     String?                 @db.Text
+  ai_best_time_to_contact  DateTime?               @db.DateTime(0)
+  action_type              follow_ups_action_type?
+  created_at               DateTime?               @default(now()) @db.Timestamp(0)
+  updated_at               DateTime?               @default(now()) @db.Timestamp(0)
+  leads                    leads                   @relation(fields: [lead_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "follow_ups_ibfk_1")
+  deals                    deals?                  @relation(fields: [deal_id], references: [id], onUpdate: NoAction, map: "follow_ups_ibfk_2")
+
+  @@index([deal_id], map: "deal_id")
+  @@index([lead_id], map: "lead_id")
+}
+
+model invites {
+  id          String          @id @db.VarChar(255)
+  email       String          @db.VarChar(255)
+  role        invites_role
+  invited_by  String          @db.VarChar(255)
+  invite_date DateTime?       @default(now()) @db.DateTime(0)
+  expiry_date DateTime?       @db.DateTime(0)
+  status      invites_status? @default(Pending)
+  users       users           @relation(fields: [invited_by], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "invites_ibfk_1")
+
+  @@index([invited_by], map: "invited_by")
+}
+
+model lead_statuses {
+  id          String    @id @db.VarChar(36)
+  label       String    @db.VarChar(50)
+  order_index Int
+  is_default  Boolean?  @default(false)
+  color       String?   @default("#000000") @db.VarChar(20)
+  created_at  DateTime? @default(now()) @db.Timestamp(0)
+}
+
+model leads {
+  id                       String                       @id @db.VarChar(255)
+  name                     String                       @db.VarChar(255)
+  company                  String                       @db.VarChar(255)
+  email                    String                       @db.VarChar(255)
+  phone                    String?                      @db.VarChar(50)
+  status                   leads_status                 @default(New)
+  owner_id                 String?                      @db.VarChar(255)
+  deal_score               Int?                         @default(0)
+  enriched_data            Json?
+  temperature              leads_temperature?           @default(Cold)
+  last_interaction_type    leads_last_interaction_type?
+  last_interaction_date    DateTime?                    @db.DateTime(0)
+  last_interaction_summary String?                      @db.Text
+  ai_score_reason          String?                      @db.Text
+  follow_up_status         leads_follow_up_status?
+  hygiene_status           leads_hygiene_status?
+  source                   String?                      @db.VarChar(255)
+  created_at               DateTime?                    @default(now()) @db.Timestamp(0)
+  updated_at               DateTime?                    @default(now()) @db.Timestamp(0)
+  transfer_status          leads_transfer_status?       @default(Accepted)
+  transfer_note            String?                      @db.Text
+  transfer_date            DateTime?                    @db.Timestamp(0)
+  communications           communications[]
+  deals                    deals[]
+  follow_ups               follow_ups[]
+  users                    users?                       @relation(fields: [owner_id], references: [id], onUpdate: NoAction, map: "leads_ibfk_1")
+  tasks                    tasks[]
+
+  @@index([owner_id], map: "owner_id")
+  // Composite indexes for high-frequency filtering
+  @@index([status, owner_id], map: "idx_leads_status_owner")
+  @@index([status, created_at], map: "idx_leads_status_created")
+}
+
+model notifications {
+  id         String             @id @db.VarChar(255)
+  user_id    String             @db.VarChar(255)
+  title      String             @db.VarChar(255)
+  message    String?            @db.Text
+  type       notifications_type
+  is_read    Boolean?           @default(false)
+  link       String?            @db.VarChar(255)
+  created_at DateTime?          @default(now()) @db.Timestamp(0)
+  users      users              @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "notifications_ibfk_1")
+
+  @@index([user_id], map: "user_id")
+}
+
+model pipeline_stages {
+  id          String    @id @db.VarChar(36)
+  label       String    @db.VarChar(50)
+  order_index Int
+  color       String?   @default("#000000") @db.VarChar(20)
+  created_at  DateTime? @default(now()) @db.Timestamp(0)
+}
+
+model roles {
+  id          String    @id @db.VarChar(36)
+  name        String    @unique(map: "name") @db.VarChar(50)
+  description String?   @db.Text
+  permissions Json?
+  is_system   Boolean?  @default(false)
+  created_at  DateTime? @default(now()) @db.Timestamp(0)
+}
+
+model sessions {
+  id              String                @id @db.VarChar(255)
+  user_id         String                @db.VarChar(255)
+  device_type     sessions_device_type?
+  browser         String?               @db.VarChar(255)
+  os              String?               @db.VarChar(255)
+  ip_address      String?               @db.VarChar(45)
+  location        String?               @db.VarChar(255)
+  login_time      DateTime              @default(now()) @db.DateTime(0)
+  last_activity   DateTime?             @db.DateTime(0)
+  is_mfa_verified Boolean?              @default(false)
+  risk_level      sessions_risk_level?
+  users           users                 @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "sessions_ibfk_1")
+
+  @@index([user_id], map: "user_id")
+}
+
+model settings {
+  id            String    @id @db.VarChar(36)
+  setting_key   String    @unique(map: "setting_key") @db.VarChar(50)
+  setting_value Json?
+  updated_at    DateTime? @default(now()) @db.Timestamp(0)
+}
+
+model tasks {
+  id              String        @id @db.VarChar(255)
+  title           String        @db.VarChar(255)
+  due_date        DateTime?     @db.DateTime(0)
+  completed       Boolean?      @default(false)
+  assigned_to_id  String?       @db.VarChar(255)
+  related_deal_id String?       @db.VarChar(255)
+  related_lead_id String?       @db.VarChar(255)
+  status          tasks_status
+  priority        Int?
+  ai_reason       String?       @db.Text
+  intent          tasks_intent?
+  created_at      DateTime?     @default(now()) @db.Timestamp(0)
+  updated_at      DateTime?     @default(now()) @db.Timestamp(0)
+  users           users?        @relation(fields: [assigned_to_id], references: [id], onUpdate: NoAction, map: "tasks_ibfk_1")
+  deals           deals?        @relation(fields: [related_deal_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "tasks_ibfk_2")
+  leads           leads?        @relation(fields: [related_lead_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "tasks_ibfk_3")
+
+  @@index([assigned_to_id], map: "assigned_to_id")
+  @@index([related_deal_id], map: "related_deal_id")
+  @@index([related_lead_id], map: "related_lead_id")
+  // Composite index for dashboard task sorting/filtering
+  @@index([assigned_to_id, status, due_date], map: "idx_tasks_dashboard")
+}
+
+model users {
+  id                       String                    @id @db.VarChar(255)
+  name                     String                    @db.VarChar(255)
+  email                    String                    @unique(map: "email") @db.VarChar(255)
+  avatar_url               String?                   @db.Text
+  role                     users_role                @default(user)
+  status                   users_status              @default(Invited)
+  mfa_enabled              Boolean?                  @default(false)
+  last_active              DateTime?                 @db.DateTime(0)
+  primary_mfa_method       users_primary_mfa_method?
+  last_mfa_verification    DateTime?                 @db.DateTime(0)
+  created_at               DateTime?                 @default(now()) @db.Timestamp(0)
+  updated_at               DateTime?                 @default(now()) @db.Timestamp(0)
+  notification_preferences Json?
+  activity_logs            activity_logs[]
+  attendance               attendance[]
+  deals                    deals[]
+  invites                  invites[]
+  leads                    leads[]
+  notifications            notifications[]
+  sessions                 sessions[]
+  tasks                    tasks[]
+}
+
+model workflow_logs {
+  id                String                @id @db.VarChar(36)
+  workflow_id       String                @db.VarChar(36)
+  workflow_name     String?               @db.VarChar(100)
+  status            workflow_logs_status? @default(Success)
+  triggered_entity  Json?
+  action_executed   String?               @db.VarChar(255)
+  actor             workflow_logs_actor?  @default(System)
+  execution_time_ms Int?
+  timestamp         DateTime?             @default(now()) @db.Timestamp(0)
+
+  @@index([timestamp], map: "idx_timestamp")
+  @@index([workflow_id], map: "idx_workflow_id")
+}
+
+model workflow_templates {
+  id              String                         @id @db.VarChar(255)
+  name            String                         @db.VarChar(255)
+  description     String?                        @db.Text
+  category        workflow_templates_category?
+  trigger_summary String?                        @db.Text
+  action_summary  String?                        @db.Text
+  has_ai          Boolean?                       @default(false)
+  risk_level      workflow_templates_risk_level?
+  created_at      DateTime?                      @default(now()) @db.Timestamp(0)
+  updated_at      DateTime?                      @default(now()) @db.Timestamp(0)
+}
+
+model workflows {
+  id           String    @id @db.VarChar(36)
+  name         String    @db.VarChar(100)
+  description  String?   @db.Text
+  trigger_type String    @db.VarChar(50)
+  actions      Json?
+  is_active    Boolean?  @default(true)
+  source       String?   @default("Manual") @db.VarChar(50)
+  risk_level   String?   @default("Low") @db.VarChar(20)
+  created_at   DateTime? @default(now()) @db.Timestamp(0)
+}
+
+enum communications_type {
+  Email
+  WhatsApp
+  SMS
+  Call
+}
+
+enum invites_role {
+  user
+  admin
+  super_admin
+}
+
+enum sessions_device_type {
+  Web
+  Mobile
+  Tablet
+}
+
+enum attendance_status {
+  Present
+  Absent
+  Late
+  On_Leave @map("On Leave")
+  Half_Day @map("Half Day")
+}
+
+enum deals_stage {
+  Prospecting
+  Qualification
+  Proposal
+  Negotiation
+  Closed___Won  @map("Closed - Won")
+  Closed___Lost @map("Closed - Lost")
+}
+
+enum execution_logs_triggered_entity_type {
+  Lead
+  Deal
+  User
+}
+
+enum workflow_logs_status {
+  Success
+  Failed
+  Skipped
+}
+
+enum workflow_templates_category {
+  Lead_Management      @map("Lead Management")
+  Follow_ups___SLA     @map("Follow-ups & SLA")
+  CRM_Hygiene          @map("CRM Hygiene")
+  AI_Insights          @map("AI Insights")
+  Assignment___Routing @map("Assignment & Routing")
+  Notifications
+}
+
+enum ai_anomaly_logs_risk_level {
+  Medium
+  High
+}
+
+enum notifications_type {
+  info
+  success
+  warning
+  error
+  lead
+  task
+  deal
+  AI
+  System
+}
+
+enum users_role {
+  user
+  admin
+  super_admin
+}
+
+enum ai_anomaly_logs_entity_type {
+  Lead
+  Deal
+  Rule
+}
+
+enum communications_direction {
+  inbound
+  outbound
+}
+
+enum leads_status {
+  New
+  Contacted
+  Qualified
+  Lost
+}
+
+enum users_status {
+  Active
+  Invited
+  Suspended
+}
+
+enum execution_logs_status {
+  Success
+  Failed
+  Skipped
+}
+
+enum follow_ups_status {
+  Overdue
+  Due
+  Upcoming
+  Completed
+}
+
+enum invites_status {
+  Pending
+  Expired
+}
+
+enum workflow_logs_actor {
+  AI
+  System
+  User
+}
+
+enum execution_logs_actor {
+  System
+  AI
+  User
+}
+
+enum tasks_status {
+  Focus_Now @map("Focus Now")
+  Today
+  Upcoming
+  Overdue
+  Completed
+}
+
+enum workflow_templates_risk_level {
+  Low
+  Medium
+  High
+}
+
+enum users_primary_mfa_method {
+  Authenticator_App @map("Authenticator App")
+  SMS
+}
+
+enum leads_temperature {
+  Hot
+  Warm
+  Cold
+}
+
+enum leads_last_interaction_type {
+  Email
+  Call
+  Meeting
+  None
+  AI_Update @map("AI Update")
+}
+
+enum sessions_risk_level {
+  Low
+  Medium
+  High
+}
+
+enum tasks_intent {
+  High_value_deal    @map("High-value deal")
+  No_reply_in_3_days @map("No reply in 3 days")
+  Deal_at_risk       @map("Deal at risk")
+  Initial_outreach   @map("Initial outreach")
+  Manual_task        @map("Manual task")
+}
+
+enum follow_ups_action_type {
+  Email
+  Call
+  WhatsApp
+  Task
+}
+
+enum activity_logs_source {
+  Manual
+  AI
+  System
+  Automation
+}
+
+enum leads_follow_up_status {
+  Pending
+  Overdue
+  None
+}
+
+enum leads_hygiene_status {
+  Clean
+  Duplicate_Suspected @map("Duplicate Suspected")
+  Incomplete_Data     @map("Incomplete Data")
+}
+
+enum leads_transfer_status {
+  Pending
+  Accepted
+  Rejected
+}
