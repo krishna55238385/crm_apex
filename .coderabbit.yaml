@@ -1,0 +1,27 @@
+language: "en-US"
+early_access: false
+reviews:
+  profile: "chill"
+  request_changes_workflow: false
+  high_level_summary: true
+  walkthrough: true
+  auto_review:
+    enabled: true
+    ignore_title_keywords:
+      - "WIP"
+      - "wip"
+      - "Draft"
+  drafts: false
+  path_filters:
+    - "!package-lock.json"
+    - "!yarn.lock"
+    - "!pnpm-lock.yaml"
+    - "!**/*.svg"
+    - "!dist/**"
+    - "!build/**"
+    - "!coverage/**"
+    - "!**/*.min.js"
+chat:
+  auto_reply: true
+knowledge_base:
+  learn: true

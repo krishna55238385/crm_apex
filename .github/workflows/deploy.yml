@@ -1,0 +1,114 @@
+name: Deploy to AWS ECS
+
+on:
+  push:
+    branches:
+      - main
+      - develop
+  workflow_dispatch:
+
+env:
+  AWS_REGION: us-east-1
+  ECR_REGISTRY: ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.us-east-1.amazonaws.com
+
+jobs:
+  build-and-deploy:
+    name: Build and Deploy
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Set environment based on branch
+        id: set-env
+        run: |
+          if [[ "${{ github.ref }}" == "refs/heads/main" ]]; then
+            echo "ENVIRONMENT=prod" >> $GITHUB_OUTPUT
+          else
+            echo "ENVIRONMENT=dev" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Get ECR repository names
+        id: ecr-repos
+        run: |
+          echo "SERVER_REPO=apexai-crm-${{ steps.set-env.outputs.ENVIRONMENT }}-server" >> $GITHUB_OUTPUT
+          echo "STUDIO_REPO=apexai-crm-${{ steps.set-env.outputs.ENVIRONMENT }}-studio" >> $GITHUB_OUTPUT
+
+      - name: Build server image
+        env:
+          ECR_REPOSITORY: ${{ steps.ecr-repos.outputs.SERVER_REPO }}
+          IMAGE_TAG: ${{ github.sha }}
+        run: |
+          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG ./server
+          docker tag $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG $ECR_REGISTRY/$ECR_REPOSITORY:latest
+
+      - name: Build studio image
+        env:
+          ECR_REPOSITORY: ${{ steps.ecr-repos.outputs.STUDIO_REPO }}
+          IMAGE_TAG: ${{ github.sha }}
+        run: |
+          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG ./studio
+          docker tag $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG $ECR_REGISTRY/$ECR_REPOSITORY:latest
+
+      - name: Push server image to ECR
+        env:
+          ECR_REPOSITORY: ${{ steps.ecr-repos.outputs.SERVER_REPO }}
+          IMAGE_TAG: ${{ github.sha }}
+        run: |
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:latest
+
+      - name: Push studio image to ECR
+        env:
+          ECR_REPOSITORY: ${{ steps.ecr-repos.outputs.STUDIO_REPO }}
+          IMAGE_TAG: ${{ github.sha }}
+        run: |
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:latest
+
+      - name: Update ECS server service
+        run: |
+          aws ecs update-service \
+            --cluster apexai-crm-${{ steps.set-env.outputs.ENVIRONMENT }}-cluster \
+            --service apexai-crm-${{ steps.set-env.outputs.ENVIRONMENT }}-server \
+            --force-new-deployment \
+            --region ${{ env.AWS_REGION }}
+
+      - name: Update ECS studio service
+        run: |
+          aws ecs update-service \
+            --cluster apexai-crm-${{ steps.set-env.outputs.ENVIRONMENT }}-cluster \
+            --service apexai-crm-${{ steps.set-env.outputs.ENVIRONMENT }}-studio \
+            --force-new-deployment \
+            --region ${{ env.AWS_REGION }}
+
+      - name: Wait for deployment to stabilize
+        run: |
+          aws ecs wait services-stable \
+            --cluster apexai-crm-${{ steps.set-env.outputs.ENVIRONMENT }}-cluster \
+            --services apexai-crm-${{ steps.set-env.outputs.ENVIRONMENT }}-server \
+            --region ${{ env.AWS_REGION }}
+          
+          aws ecs wait services-stable \
+            --cluster apexai-crm-${{ steps.set-env.outputs.ENVIRONMENT }}-cluster \
+            --services apexai-crm-${{ steps.set-env.outputs.ENVIRONMENT }}-studio \
+            --region ${{ env.AWS_REGION }}
+
+      - name: Deployment summary
+        run: |
+          echo "✅ Deployment successful!"
+          echo "Environment: ${{ steps.set-env.outputs.ENVIRONMENT }}"
+          echo "Server image: $ECR_REGISTRY/${{ steps.ecr-repos.outputs.SERVER_REPO }}:${{ github.sha }}"
+          echo "Studio image: $ECR_REGISTRY/${{ steps.ecr-repos.outputs.STUDIO_REPO }}:${{ github.sha }}"
