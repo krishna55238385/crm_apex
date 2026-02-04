@@ -1,6 +1,7 @@
 import express from 'express';
 import leadsRouter from './leads';
 import dealsRouter from './deals';
+import pipelineRouter from './pipeline';
 import tasksRouter from './tasks';
 import usersRouter from './users';
 import analyticsRouter from './analytics';
@@ -23,6 +24,7 @@ const router = express.Router();
 
 router.use('/leads', leadsRouter);
 router.use('/deals', dealsRouter);
+router.use('/pipeline', pipelineRouter);
 router.use('/tasks', tasksRouter);
 router.use('/users', usersRouter);
 router.use('/analytics', analyticsRouter);

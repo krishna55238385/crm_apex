@@ -69,20 +69,52 @@ export const suspendUser = asyncHandler(async (req: Request, res: Response) => {
 export const deleteUser = asyncHandler(async (req: Request, res: Response) => {
     const { id } = req.params;
 
+    // Check if user has assigned work
     const leadsCount = await prisma.leads.count({ where: { owner_id: id as string } });
-    const tasksCount = await prisma.tasks.count({ where: { assigned_to_id: id as string } }); // Note schema: assigned_to_id
+    const tasksCount = await prisma.tasks.count({ where: { assigned_to_id: id as string } });
 
+    // If user has assigned work, auto-reassign to a super admin
     if (leadsCount > 0 || tasksCount > 0) {
-        res.status(400).json({
-            message: 'Cannot delete user with assigned work. Please reassign leads and tasks first.',
-            leads: leadsCount,
-            tasks: tasksCount
+        // Find a super admin to reassign work to (exclude the user being deleted)
+        const systemAdmin = await prisma.users.findFirst({
+            where: {
+                role: 'super_admin',
+                id: { not: id as string },
+                status: 'Active'
+            }
         });
-        return;
+
+        if (!systemAdmin) {
+            res.status(400).json({
+                message: 'Cannot delete user: No active super admin available to reassign work to.',
+                leads: leadsCount,
+                tasks: tasksCount
+            });
+            return;
+        }
+
+        // Reassign all leads and tasks to the super admin
+        await prisma.$transaction([
+            prisma.leads.updateMany({
+                where: { owner_id: id as string },
+                data: { owner_id: systemAdmin.id }
+            }),
+            prisma.tasks.updateMany({
+                where: { assigned_to_id: id as string },
+                data: { assigned_to_id: systemAdmin.id }
+            })
+        ]);
     }
 
+    // Delete the user
     await prisma.users.delete({ where: { id: id as string } });
-    res.json({ message: 'User deleted' });
+
+    res.json({
+        message: 'User deleted successfully',
+        reassigned: leadsCount > 0 || tasksCount > 0,
+        leadsReassigned: leadsCount,
+        tasksReassigned: tasksCount
+    });
 });
 
 export const reassignWork = asyncHandler(async (req: Request, res: Response) => {

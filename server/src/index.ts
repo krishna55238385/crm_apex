@@ -1,9 +1,18 @@
 import express from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
+import compression from 'compression';
 import dotenv from 'dotenv';
+import path from 'path';
 
-dotenv.config();
+// Load environment variables from root .env file
+// In development (ts-node): __dirname = /server/src -> go up 2 levels to root
+// In production (node): __dirname = /server/dist -> go up 2 levels to root
+dotenv.config({ path: path.join(__dirname, '..', '..', '.env') });
+
+// Initialize Sentry FIRST (before any other imports)
+import { initSentry, Sentry } from './config/sentry';
+initSentry();
 
 // import { connectDB } from './config/db'; // Removed legacy connection
 
@@ -30,8 +39,31 @@ const corsOptions = {
 
 app.use(cors(corsOptions));
 // app.options('*', cors(corsOptions)); // Removed: crashes Express 5, and app.use(cors()) handles preflights already
-app.use(helmet());
+
+// Response compression (before other middlewares)
+app.use(compression({
+    filter: (req, res) => {
+        if (req.headers['x-no-compression']) {
+            return false;
+        }
+        return compression.filter(req, res);
+    },
+    level: 6, // Compression level (0-9)
+}));
+
+// Enhanced security headers
+import { securityHeaders } from './config/security';
+app.use(securityHeaders);
+
 app.use(express.json());
+
+// Input sanitization (before other middlewares)
+import { sanitizeInput, requestSizeLimiter } from './middlewares/validation';
+app.use(sanitizeInput);
+app.use(requestSizeLimiter(10 * 1024 * 1024)); // 10MB limit
+
+// Sentry request handler (must be first middleware)
+import { setupExpressErrorHandler } from '@sentry/node';
 
 import { correlationMiddleware } from './middlewares/correlation';
 app.use(correlationMiddleware);
@@ -39,8 +71,13 @@ app.use(correlationMiddleware);
 import { requestLogger } from './middlewares/requestLogger';
 app.use(requestLogger);
 
-import { limiter } from './middlewares/rateLimiter';
-app.use(limiter);
+// Metrics middleware
+import { metricsMiddleware } from './middlewares/metrics';
+app.use(metricsMiddleware);
+
+// Enhanced rate limiting
+import { perUserLimiter } from './middlewares/rateLimiter';
+app.use(perUserLimiter);
 
 // Database Connection
 // Database Connection managed by Prisma Client automatically.
@@ -66,6 +103,16 @@ app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 // Legacy redirect for backward compatibility (Optional)
 // app.use('/api', (req, res) => res.redirect(307, '/api/v1' + req.url));
+
+// Metrics endpoint (before error handler)
+import { register } from './config/prometheus';
+app.get('/metrics', async (req, res) => {
+    res.set('Content-Type', register.contentType);
+    res.end(await register.metrics());
+});
+
+// Sentry error handler (must be after routes, before other error handlers)
+setupExpressErrorHandler(app);
 
 import { errorHandler } from './middlewares/errorHandler';
 app.use(errorHandler);

@@ -2,6 +2,10 @@
 .env
 .env.local
 .env.*.local
+# Prevent .env files in subdirectories (we use root .env only)
+server/.env*
+studio/.env*
+**/.env.backup
 
 # Dependencies
 node_modules/
@@ -9,10 +13,19 @@ node_modules/
 # Build outputs
 dist/
 build/
+.next/
 
 # Logs
 *.log
 npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Test files and outputs
+test-*.js
+test-*.sh
+test_output*.txt
+coverage/
 
 # OS files
 .DS_Store
