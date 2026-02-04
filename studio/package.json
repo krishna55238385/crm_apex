@@ -6,7 +6,8 @@
     "dev": "next dev --turbopack -p 9002",
     "genkit:dev": "genkit start -- tsx src/ai/dev.ts",
     "genkit:watch": "genkit start -- tsx --watch src/ai/dev.ts",
-    "build": "NODE_ENV=production NODE_OPTIONS='--max-old-space-size=4096' next build",
+    "build": "NODE_ENV=production node --max-old-space-size=4096 ./node_modules/.bin/next build",
+    "build:safe": "NODE_ENV=production node --max-old-space-size=2048 ./node_modules/.bin/next build",
     "start": "next start",
     "lint": "next lint",
     "typecheck": "tsc --noEmit"

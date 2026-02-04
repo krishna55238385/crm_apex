@@ -49,7 +49,7 @@ export default function ForwardedLeadsPage() {
             const { fetchLeads, fetchActivityLogs } = await import('@/lib/api');
             const [leadsData, logsData] = await Promise.all([fetchLeads(), fetchActivityLogs()]);
 
-            if (leadsData) setLeads(leadsData);
+            if (leadsData) setLeads(leadsData.data || []);
             if (logsData) setActivityLogs(logsData);
         } catch (error) {
             console.error("Failed to fetch data", error);
