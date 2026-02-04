@@ -12,7 +12,24 @@ const firebaseConfig = {
 };
 
 // Initialize Firebase
-const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
-const auth = getAuth(app);
+// Initialize Firebase
+let app: any;
+let auth: any;
+
+if (typeof window === 'undefined' && !firebaseConfig.apiKey) {
+    // Build time mock to prevent crashes
+    console.warn("Firebase config missing during server build - using mock");
+    app = {} as any;
+    auth = {} as any;
+} else {
+    try {
+        app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
+        auth = getAuth(app);
+    } catch (error) {
+        console.error("Firebase initialization failed:", error);
+        app = {} as any;
+        auth = {} as any;
+    }
+}
 
 export { app, auth };
