@@ -12,7 +12,16 @@ interface SettingsNavProps {
 export default function SettingsNav({ activeTab, setActiveTab }: SettingsNavProps) {
   const { hasRole } = useAuth();
 
-  const navItems = [
+  interface NavItem {
+    id: string;
+    label?: string;
+    icon?: any;
+    roles?: string[];
+    type?: 'divider';
+    disabled?: boolean;
+  }
+
+  const navItems: NavItem[] = [
     { id: 'profile', label: 'My Profile', icon: User, roles: ['user', 'admin', 'super_admin'] },
     { id: 'appearance', label: 'Appearance', icon: Palette, roles: ['user', 'admin', 'super_admin'] },
     { id: 'notifications', label: 'Notifications', icon: Bell, roles: ['user', 'admin', 'super_admin'] },
@@ -35,7 +44,7 @@ export default function SettingsNav({ activeTab, setActiveTab }: SettingsNavProp
         if (item.type === 'divider') {
           return <div key={item.id} className="py-2"><hr className="border-border" /></div>;
         }
-        
+
         const Icon = item.icon!;
 
         return (

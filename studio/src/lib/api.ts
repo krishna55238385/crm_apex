@@ -530,3 +530,9 @@ export async function generateWorkflowConfig(prompt: string): Promise<any> {
     if (!res.ok) throw new Error('Failed to generate workflow configuration');
     return await res.json();
 }
+
+export async function fetchAiAnomalies(): Promise<any[]> {
+    const res = await authenticatedFetch(`${API_BASE_URL}/ai/anomalies`, { cache: 'no-store' });
+    if (!res.ok) return [];
+    return await res.json();
+}
