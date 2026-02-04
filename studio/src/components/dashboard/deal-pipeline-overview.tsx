@@ -47,7 +47,7 @@ export default function DealPipelineOverview({ data }: DealPipelineOverviewProps
           <Tooltip
             content={<ChartTooltipContent
               formatter={(value) => formatCurrency(Number(value))}
-              cursorClassName="fill-muted/50"
+
             />}
           />
           <Bar dataKey="value" fill="url(#colorValue)" radius={[8, 8, 0, 0]} />
