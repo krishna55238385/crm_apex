@@ -1,6 +1,9 @@
 import { NextConfig } from 'next';
 
 const nextConfig: NextConfig = {
+  // Output standalone for Docker
+  output: 'standalone',
+  
   // Enable React strict mode
   reactStrictMode: true,
 
