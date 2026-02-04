@@ -42,7 +42,7 @@ export default function LeadsBySourceChart() {
         } else {
           // Fallback: Aggregate locally if API doesn't return pre-computed
           const leads = await fetchLeads();
-          const aggregated = leads.reduce((acc: any[], lead: any) => {
+          const aggregated = (leads.data || []).reduce((acc: any[], lead: any) => {
             const source = lead.source || 'Unknown';
             const existing = acc.find(i => i.source === source);
             if (existing) existing.count++;

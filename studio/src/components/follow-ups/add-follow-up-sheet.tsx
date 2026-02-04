@@ -41,7 +41,7 @@ export default function AddFollowUpSheet({ children, leadId: initialLeadId, defa
   useEffect(() => {
     async function loadLeads() {
       const data = await fetchLeads();
-      setLeads(data);
+      setLeads(data.data || []);
     }
     if (open) {
       loadLeads();

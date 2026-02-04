@@ -64,8 +64,12 @@ export default function LeadDetailPage() {
           setLead(loadedLead);
         }
 
-        if (logs && Array.isArray(logs)) {
-          setActivityLogs(logs);
+        if (logs) {
+          if (Array.isArray(logs)) {
+            setActivityLogs(logs);
+          } else if ((logs as any).data && Array.isArray((logs as any).data)) {
+            setActivityLogs((logs as any).data);
+          }
         }
 
         if (loadedFollowUps && Array.isArray(loadedFollowUps)) {

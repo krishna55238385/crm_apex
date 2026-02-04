@@ -26,7 +26,7 @@ export default function AnalyticsPage() {
           fetchLeads(),
           fetchDashboardStats()
         ]);
-        setData({ analytics, leads: leadsResponse.data, dashboardStats });
+        setData({ analytics, leads: leadsResponse.data || [], dashboardStats });
       } catch (error) {
         console.error("Failed to load analytics data", error);
       } finally {

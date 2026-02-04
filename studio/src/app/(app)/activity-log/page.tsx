@@ -27,7 +27,7 @@ export default function ActivityLogPage() {
           fetchActivityLogs(),
           fetchUsers()
         ]);
-        setActivities(logsData);
+        setActivities(Array.isArray(logsData) ? logsData : (logsData as any).data || []);
         setUsers(usersData);
       } catch (err) {
         console.error("Failed to data", err);
